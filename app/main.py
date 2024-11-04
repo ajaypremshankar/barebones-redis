@@ -3,32 +3,15 @@ import threading
 
 from app import command_parser
 
-data = {}
-
-def encode_resp(raw_resp: str, resp_type = None):
-    if not resp_type:
-        return f"+{raw_resp}\r\n".encode()
-    elif resp_type == 'simple_string':
-        return f"${len(raw_resp)}\r\n{raw_resp}\r\n".encode()
 
 def spawn_requests(client: socket.socket):
-    connected = True
-    while connected:
+    while True:
         command = client.recv(1024).decode()
-        fired_command = command_parser.parse(command)
+        if not bool(command):
+            break
 
-        match fired_command.command.lower():
-            case 'ping':
-                client.send(encode_resp("PONG"))
-            case 'echo':
-                client.send(encode_resp(fired_command.params[0]))
-            case 'set':
-                data[fired_command.params[0]] = fired_command.params[1]
-                client.send(encode_resp("OK"))
-            case 'get':
-                client.send(encode_resp(data[fired_command.params[0]], 'simple_string'))
-
-        connected = bool(command)
+        redis_command = command_parser.parse(command)
+        redis_command.execute(client)
 
 
 def main():

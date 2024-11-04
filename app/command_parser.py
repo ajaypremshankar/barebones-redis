@@ -1,12 +1,25 @@
 import re
 
-from app.models import FiredCommand
+from app.commands.abs_command import BaseCommand, SupportedCommands
+from app.commands.echo_command import EchoCommand
+from app.commands.get_command import GetCommand
+from app.commands.ping_command import PingCommand
+from app.commands.set_command import SetCommand
 
 
-# def test(command_arr: [str]):
+def get_command(command: str, args: [str]):
+    match SupportedCommands[command.upper()]:
+        case SupportedCommands.PING:
+            return PingCommand(args)
+        case SupportedCommands.ECHO:
+            return EchoCommand(args)
+        case SupportedCommands.SET:
+            return SetCommand(args)
+        case SupportedCommands.GET:
+            return GetCommand(args)
 
 
-def parse(raw_command: str):
+def parse(raw_command: str) -> BaseCommand:
     match = re.search(r'^\*(\d+)\r\n', raw_command)
 
     if not match:
@@ -19,9 +32,9 @@ def parse(raw_command: str):
 
     raw_command_and_params = raw_command.split("\r\n", maxsplit=1)[1]
 
-    command_and_params_arr = raw_command_and_params.split("$")[1:] # skip empty string
+    command_and_params_arr = raw_command_and_params.split("$")[1:]  # skip empty string
 
-    command = command_and_params_arr[0].split("\r\n")[1]
+    command = command_and_params_arr[0].split("\r\n")[1].upper()
 
     raw_params = command_and_params_arr[1:]
 
@@ -30,15 +43,4 @@ def parse(raw_command: str):
     for rp in raw_params:
         params.append(rp.split("\r\n")[1])
 
-
-    return FiredCommand(command, params)
-
-
-
-
-
-
-
-
-
-
+    return get_command(command, args=params)
