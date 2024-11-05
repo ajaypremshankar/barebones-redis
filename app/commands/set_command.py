@@ -3,7 +3,7 @@ from socket import socket
 
 from app.commands.abs_command import BaseCommand, SupportedCommands
 from app.resp_parser import encode_resp
-from app.store import Store
+from app.globaldatastore import GlobalDataStore
 
 
 class SetCommand(BaseCommand):
@@ -41,7 +41,7 @@ class SetCommand(BaseCommand):
         elif self.get_arg(key="PX"):
             expiry_dt = (datetime.datetime.now() + datetime.timedelta(milliseconds=int(self.get_arg(key="PX"))))
 
-        Store.set_val(self.get_arg(key="key"), {
+        GlobalDataStore.set_val(self.get_arg(key="key"), {
             "value": self.get_arg(key="value"),
             "expiry_dt": expiry_dt
         })

@@ -1,6 +1,7 @@
 import re
 
 from app.commands.abs_command import BaseCommand, SupportedCommands
+from app.commands.config.config_command import ConfigCommand
 from app.commands.echo_command import EchoCommand
 from app.commands.get_command import GetCommand
 from app.commands.ping_command import PingCommand
@@ -17,6 +18,8 @@ def get_command(command: str, args: [str]):
             return SetCommand(args)
         case SupportedCommands.GET:
             return GetCommand(args)
+        case SupportedCommands.CONFIG:
+            return ConfigCommand(args)
 
 
 def parse(raw_command: str) -> BaseCommand:

@@ -8,6 +8,7 @@ class SupportedCommands(Enum):
     GET = "GET",
     ECHO = "ECHO",
     PING = "PING"
+    CONFIG = "CONFIG"
 
 
 class BaseCommand:
